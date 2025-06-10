@@ -17,7 +17,7 @@ x-shared-env: &shared-api-worker-env
   LOG_FILE_BACKUP_COUNT: ${LOG_FILE_BACKUP_COUNT:-5}
   LOG_DATEFORMAT: ${LOG_DATEFORMAT:-%Y-%m-%d %H:%M:%S}
   LOG_TZ: ${LOG_TZ:-UTC}
-  DEBUG: ${DEBUG:-true}
+  DEBUG: ${DEBUG:-false}
   FLASK_DEBUG: ${FLASK_DEBUG:-false}
   ENABLE_REQUEST_LOGGING: ${ENABLE_REQUEST_LOGGING:-False}
   SECRET_KEY: ${SECRET_KEY:-sk-9f73s3ljTXVcMT3Blb3ljTqtsKiGHXVcMT3BlbkFJLK7U}
@@ -509,8 +509,7 @@ services:
   # API service
   api:
     image: langgenius/dify-api:1.4.1
-    # image: python:3.12-slim-bookworm
-    restart: no
+    restart: always
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
@@ -531,15 +530,6 @@ services:
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - ./volumes/app/storage:/app/api/storage
-      - .:/app/api
-    entrypoint: /bin/bash
-    command:
-      # - /bin/bash
-      - -c
-      - >
-        echo “wait debugpy...” && pip install debugpy && python -m debugpy --listen 0.0.0.0:5678 --wait-for-client -m flask run --host=0.0.0.0 --port=5001
-    ports:
-      - "5678:5678"
     networks:
       - ssrf_proxy_network
       - default

@@ -1,6 +1,13 @@
 import os
 import sys
 
+import debugpy
+try:
+    debugpy.listen(("localhost", 5678))  # 默认端口 5678
+    debugpy.wait_for_client()  # 阻塞直至 VS Code 连接
+    print("Debugger attached!")
+except Exception as e:
+    pass  # 忽略异常避免影响生产环境
 
 def is_db_command():
     if len(sys.argv) > 1 and sys.argv[0].endswith("flask") and sys.argv[1] == "db":
